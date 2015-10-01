@@ -190,10 +190,6 @@ gulp.task('rename-index', function () {
 // Generate config data for the <sw-precache-cache> element.
 // This include a list of files that should be precached, as well as a (hopefully unique) cache
 // id that ensure that multiple PSK projects don't share the same Cache Storage.
-// This task does not run by default, but if you are interested in using service worker caching
-// in your project, please enable it within the 'default' task.
-// See https://github.com/PolymerElements/polymer-starter-kit#enable-service-worker-support
-// for more context.
 gulp.task('cache-config', function (callback) {
   var dir = 'dist';
   var config = {
@@ -282,12 +278,11 @@ gulp.task('serve:dist', ['default'], function () {
 
 // Build production files, the default task
 gulp.task('default', ['clean'], function (cb) {
-  // Uncomment 'cache-config' after 'rename-index' if you are going to use service workers.
   runSequence(
     ['copy', 'styles'],
     'elements',
     ['jshint', 'images', 'fonts', 'html'],
-    'vulcanize','rename-index', // 'cache-config',
+    'vulcanize','rename-index','cache-config',
     cb);
 });
 
