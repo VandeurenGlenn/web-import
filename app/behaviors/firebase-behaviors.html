@@ -1,0 +1,10 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="../bower_components/firebase/firebase.js"></script>
+
+<script>
+  FirebaseBehaviors = {
+    newFirebase: function (param) {
+      return new Firebase('https://webimport.firebaseio.com/' + param?param:'');
+    }
+  }
+</script>
