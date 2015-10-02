@@ -71,4 +71,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     document.getElementById('mainContainer').scrollTop = 0;
   };
 
+  app._computeLoginDisabled = function (route) {
+    switch (route) {
+      case 'home':
+      case 'contact':
+        return true;
+        // break;
+      default:
+      return false;
+    }
+  };
+
 })(document);
