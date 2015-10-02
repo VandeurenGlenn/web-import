@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>web-import-login tests-basic</title>
+
+    <script src="../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script src="../../bower_components/web-component-tester/browser.js"></script>
+    <script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
+    <link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../elements/web-import-login/web-import-login.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <web-import-login></web-import-login>
+      </template>
+    </test-fixture>
+
+    <script>
+
+      suite('web-import-login tests', function () {
+        var login, loginDialog;
+
+        setup(function () {
+          login = fixture('basic');
+          loginDialog = login.querySelector('web-import-dialog');
+        });
+
+        test('open login dialog', function () {
+          login._computeOpened(false, false);
+          assert.equal(loginDialog.opened, true);
+        });
+
+        test('login', function () {
+          login.params = null;
+          login.googleLogin();
+          login.addEventListener('login', function () {
+            assert.equal(login.user, true);
+          });
+
+        });
+
+        test('check if login dialog is closed', function () {
+          assert.equal(loginDialog.opened, false);
+        });
+      })
+    </script>
+  </body>
+</html>
