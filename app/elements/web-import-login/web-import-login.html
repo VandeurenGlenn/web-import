@@ -35,13 +35,17 @@
         disabled: {
           type: Boolean,
           value: false
+        },
+
+        params: {
+          type: Object,
+          value: {scope: 'email'};
         }
       },
 
       googleLogin: function () {
         this.provider = 'google';
-        var params = {scope: 'email'};
-        this.querySelector('firebase-auth').login(params);
+        this.querySelector('firebase-auth').login(this.params);
       },
 
       _computeOpened: function (user, disabled) {
