@@ -82,6 +82,12 @@ This installs the element sets (Paper, Iron, Platinum) and tools the starter kit
 
 ### Development workflow
 
+#### Download domains
+
+```sh
+gulp domains
+```
+
 #### Serve / watch
 
 ```sh
