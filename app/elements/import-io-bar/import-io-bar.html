@@ -1,0 +1,141 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="import-io-bar">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 64px;
+        box-sizing: border-box;
+      }
+      paper-material {
+        @apply(--layout-horizontal);
+      }
+      input, .status-badge {
+        @apply(--paper-font-common-base);
+      }
+      input {
+        width: calc(100% - 100px - 48px);
+        height: 48px;
+        padding-left: 32px;
+        padding-right: 32px;
+        border: none;
+      }
+      .status-badge {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        width: 100px;
+        background: #eee;
+        border: none;
+      }
+      .green {
+        color: #fff;
+        background: green;
+      }
+      .red {
+        color: #fff;
+        background: red;
+      }
+    </style>
+    <iron-ajax
+      auto
+      url="../../data/domains.dat"
+      handle-as="text"
+      on-response="handleResponse"></iron-ajax>
+      <span>[[progress]]</span>
+    <paper-material elevation="1">
+      <input type="text" value="{{url::input}}" placeholder="Enter url to site/app for importing data">
+      <div class="status-badge" disabled="[[_computeUrlDisabled(url)]]"><span hidden="[[_computeUrlDisabled(url)]]">VALID URL</span></div>
+    </paper-material>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'import-io-bar',
+
+      properties: {
+        url: {
+          type: String,
+          value: null,
+          observer: '_urlChanged'
+        },
+
+        urlToImport: {
+          type: String,
+          notify: true
+        },
+
+        domains: {
+          type: Array,
+          value: []
+        }
+      },
+
+      _urlChanged: function (url) {
+        if (url !== null && this._validateUrl(url)) {
+          this.querySelector('.status-badge').classList.add('green');
+          this.querySelector('.status-badge').classList.remove('red');
+          this.urlToImport = url;
+          this.fire('url-to-import', url);
+        } else if(url !== null){
+          this.querySelector('.status-badge').classList.add('red');
+          this.querySelector('.status-badge').classList.remove('green');
+        }
+      },
+
+      _computeUrlDisabled: function (url) {
+        if (url !== null && this._validateUrl(url)) {
+          return false;
+        }
+        return true;
+      },
+
+      _validateUrl: function (url) {
+        for (var i = 0; i < this.domains.length; i++) {
+          if (url.includes(this.domains[i]) && url.includes('https://') || url.includes('http://') || url.includes('www.')) {
+            return true;
+          }
+        }
+      },
+
+      handleResponse: function (e) {
+        this._parseTlds(e.detail.response);
+      },
+
+      _parseTlds: function (data) {
+        var tlds = {};
+        this.domains = [];
+        if (data) {
+          var lines = data.split(/\n/);
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (line) {
+              var comment = line.indexOf('//');
+              if (comment == 0) {
+                continue;
+              } else if (comment > 0) {
+                line = line.substring(0, comment);
+              }
+              var tld = line.replace(/\s/g, '');
+              this.push('domains', tld);
+            }
+          }
+        }
+      }
+    });
+  })();
+  </script>
+</dom-module>
