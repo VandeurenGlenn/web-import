@@ -124,7 +124,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="content">
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-            <home-section data-route="home"></home-section>
+            <home-section data-route="home" config-data="[[configData]]"></home-section>
 
             <section data-route="users">
               <paper-material elevation="1">
@@ -157,7 +157,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </paper-scroll-header-panel>
     </paper-drawer-panel>
 
-    <web-import-login user="{{user}}" disabled="[[_computeLoginDisabled(route)]]"></web-import-login>
+    <web-import-login user="{{user}}" disabled="[[_computeLoginDisabled(route)]]" on-login="getData"></web-import-login>
+    <web-import-data config-data="{{configData}}"></web-import-data>
 
     <!-- Service Worker -->
     <paper-toast id="caching-complete"
