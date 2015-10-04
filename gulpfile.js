@@ -24,6 +24,7 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var polybuild = require('polybuild');
+var download = require('gulp-download');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -165,6 +166,12 @@ gulp.task('html', function () {
   return optimizeHtmlTask(
     ['app/**/*.html', '!app/{elements,test}/**/*.html'],
     'dist');
+});
+
+gulp.task('domains', function () {
+  download('https://publicsuffix.org/list/effective_tld_names.dat')
+    .pipe($.rename('domains.dat'))
+    .pipe(gulp.dest('app/data/'));
 });
 
 // Polybuild will take care of inlining HTML imports,
