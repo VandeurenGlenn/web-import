@@ -10,7 +10,8 @@
     "page": "visionmedia/page.js#~1.6.3",
     "firebase": "~2.3.1",
     "neon-animation": "PolymerElements/neon-animation#~1.0.6",
-    "firebase-element": "GoogleWebcomponents/firebase-element#~1.0.6"
+    "firebase-element": "GoogleWebcomponents/firebase-element#~1.0.6",
+    "import-io": "VandeurenGlenn/import-io#~1.0.0"
   },
   "devDependencies": {
     "web-component-tester": "*",
