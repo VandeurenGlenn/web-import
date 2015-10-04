@@ -7,7 +7,7 @@ var ret = {
   },
   'plugins': {
     local: {
-      browsers: ['chrome', 'ie']
+      browsers: ['chrome']
     },
     sauce: {
       disabled: false,
