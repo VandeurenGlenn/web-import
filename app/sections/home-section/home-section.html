@@ -1,0 +1,87 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../elements/import-io-bar/import-io-bar.html">
+<link rel="import" href="../../bower_components/import-io/import-io.html">
+<link rel="import" href="../../bower_components/juicy-jsoneditor/src/juicy-jsoneditor.html">
+<link rel="stylesheet" type="text/css" href="../../styles/jsoneditor.css">
+
+<dom-module id="home-section">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-button {
+        min-width: 100px;
+        height: 38px;
+      }
+      paper-material {
+        padding: 0;
+      }
+    </style>
+
+    <import-io-bar url-to-import="{{urlToImport}}" on-url-to-import="getData"></import-io-bar>
+
+    <paper-material elevation="1" hidden="[[_computeHidden(data)]]">
+      <juicy-jsoneditor json="[[importResults]]" history></juicy-jsoneditor>
+    </paper-material>
+
+    <paper-button hidden="[[_computeHidden(data)]]" on-tap="_downloadJSON" raised>Download JSON</paper-button>
+
+    <import-io data="{{data}}" user-id="[[configData.importIo_userKey]]" api-key="[[configData.importIo_apiKey]]"></import-io>
+  </template>
+  <script>
+    Polymer({
+      is: 'home-section',
+
+      properties: {
+        configData: Object,
+        data: {
+          type: Object,
+          value: null,
+          observer: '_dataChanged'
+        }
+      },
+
+      getData: function () {
+        this.querySelector('import-io').urlToData(this.urlToImport);
+      },
+
+      _computeHidden: function (data) {
+        if (data) {
+          this.querySelector('juicy-jsoneditor').addEventListener('change', this._jsonChanged.bind(this));
+          return false;
+        }
+        return true;
+      },
+
+      _dataChanged: function (data) {
+        for (var props in data) {
+          if (data.hasOwnProperty(props)) {
+            for (var prop in data[props]) {
+              if (data[props].hasOwnProperty(prop)) {
+                this.importResults = data[props][prop].results;
+              }
+            }
+          }
+        }
+      },
+
+      _jsonChanged: function (json) {
+        this.importResults = JSON.parse(event.target.getText());
+      },
+
+      _downloadJSON: function () {
+        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.importResults));
+        var a = document.createElement('a');
+        Polymer.dom(a).setAttribute("href", dataStr);
+        Polymer.dom(a).setAttribute("download", "import-data.json");
+        Polymer.dom(this.root).appendChild(a)
+        a.click();
+        a = null;
+      }
+    });
+  </script>
+</dom-module>

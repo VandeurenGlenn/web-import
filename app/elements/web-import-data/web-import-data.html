@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../behaviors/firebase-behaviors.html">
+
+<dom-module id="web-import-data">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'web-import-data',
+      behaviors: [FirebaseBehaviors],
+
+      properties: {
+        configData: {
+          type: Object,
+          value: {},
+          notify: true
+        }
+      },
+
+      ready: function () {
+        this.getData();
+      },
+
+      getData: function () {
+        var ioConfig = this.newFirebase('configuration');
+        ioConfig.on('value', this._boundDataHandler.bind(this));
+      },
+
+      getUserData: function (user, params) {
+        // use exists()
+      },
+
+      _boundDataHandler: function (event) {
+        var config = event.val();
+        for (var data in config) {
+          if (config.hasOwnProperty(data) && config[data] !== this.configData[data]) {
+            this.configData = config;
+          }
+        }
+      }
+    });
+  </script>
+</dom-module>

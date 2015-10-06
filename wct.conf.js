@@ -11,7 +11,7 @@ var ret = {
     },
     sauce: {
       disabled: false,
-      browsers: ['chrome', 'ie']
+      browsers: ['chrome']
     }
   }
 };

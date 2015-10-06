@@ -75,11 +75,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     switch (route) {
       case 'home':
       case 'contact':
+      case 'license':
         return true;
         // break;
       default:
       return false;
     }
+  };
+
+  app.getUserData = function () {
+    document.querySelector('web-import-data').getUserData(app.user);
   };
 
 })(document);

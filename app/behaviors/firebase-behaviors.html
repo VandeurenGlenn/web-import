@@ -4,7 +4,9 @@
 <script>
   FirebaseBehaviors = {
     newFirebase: function (param) {
-      return new Firebase('https://webimport.firebaseio.com/' + param?param:'');
+      var params = param?param:'';
+      return new Firebase('https://webimport.firebaseio.com/' + params);
+      params = null;
     }
   }
 </script>
