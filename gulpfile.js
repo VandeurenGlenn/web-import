@@ -187,13 +187,17 @@ gulp.task('size', function () {
     .pipe($.size({title: 'distribution size'}));
 });
 
+// Vulcanize granular configuration
 gulp.task('vulcanize', function () {
-  return gulp.src('dist/index.html')
+  var DEST_DIR = 'dist/elements';
+  return gulp.src('dist/elements/elements.vulcanized.html')
     .pipe($.vulcanize({
       stripComments: true,
       inlineCss: true,
-      inlineScripts: true}))
-    .pipe(gulp.dest('dist/'));
+      inlineScripts: true
+    }))
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe($.size({title: 'vulcanize'}));
 });
 
 // Generate config data for the <sw-precache-cache> element.
@@ -287,6 +291,7 @@ gulp.task('serve:dist', ['default'], function () {
 
 // Build production files, the default task
 gulp.task('default', ['clean'], function (cb) {
+  // Uncomment 'cache-config' if you are going to use service workers.
   runSequence(
     ['copy','styles'],
     'elements',
