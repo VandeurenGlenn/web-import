@@ -23,7 +23,6 @@ var glob = require('glob');
 var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
-var polybuild = require('polybuild');
 var download = require('gulp-download');
 
 var AUTOPREFIXER_BROWSERS = [
@@ -140,6 +139,10 @@ gulp.task('copy', function () {
                            'app/elements/**/*.js'])
     .pipe(gulp.dest('dist/elements'));
 
+  var data = gulp.src(['app/data/*.dat','app/data/*.json', 'app/data/*.csv'])
+    .pipe(gulp.dest('dist/data'))
+    .pipe($.size({title: 'data'}));
+
   var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
     .pipe(gulp.dest('dist/elements/bootstrap'));
 
@@ -150,7 +153,7 @@ gulp.task('copy', function () {
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
 
-  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
+  return merge(app, bower, elements, data, vulcanized, swBootstrap, swToolbox)
     .pipe($.size({title: 'copy'}));
 });
 
@@ -169,29 +172,24 @@ gulp.task('html', function () {
 });
 
 gulp.task('domains', function () {
-  download('https://publicsuffix.org/list/effective_tld_names.dat')
+  return download('https://publicsuffix.org/list/effective_tld_names.dat')
     .pipe($.rename('domains.dat'))
-    .pipe(gulp.dest('app/data/'));
+    .pipe(gulp.dest('app/data/'))
+    .pipe($.size({title: 'domains'}));
 });
 
-// Polybuild will take care of inlining HTML imports,
-// scripts and CSS for you.
+gulp.task('size', function () {
+  return gulp.src('dist/*')
+    .pipe($.size({title: 'distribution size'}));
+});
+
 gulp.task('vulcanize', function () {
   return gulp.src('dist/index.html')
-    .pipe(polybuild({maximumCrush: true}))
+    .pipe($.vulcanize({
+      stripComments: true,
+      inlineCss: true,
+      inlineScripts: true}))
     .pipe(gulp.dest('dist/'));
-});
-
-// If you require more granular configuration of Vulcanize
-// than polybuild provides, follow instructions from readme at:
-// https://github.com/PolymerElements/polymer-starter-kit/#if-you-require-more-granular-configuration-of-vulcanize-than-polybuild-provides-you-an-option-by
-
-// Rename Polybuild's index.build.html to index.html
-gulp.task('rename-index', function () {
-  gulp.src('dist/index.build.html')
-    .pipe($.rename('index.html'))
-    .pipe(gulp.dest('dist/'));
-  return del(['dist/index.build.html']);
 });
 
 // Generate config data for the <sw-precache-cache> element.
@@ -227,7 +225,7 @@ gulp.task('clean', function (cb) {
 });
 
 // Watch files for changes & reload
-gulp.task('serve', ['styles', 'elements', 'images'], function () {
+gulp.task('serve', ['domains','styles', 'elements', 'images'], function () {
   browserSync({
     port: 5000,
     notify: false,
@@ -286,10 +284,10 @@ gulp.task('serve:dist', ['default'], function () {
 // Build production files, the default task
 gulp.task('default', ['clean'], function (cb) {
   runSequence(
-    ['copy', 'styles'],
+    ['copy','styles'],
     'elements',
     ['jshint', 'images', 'fonts', 'html'],
-    'vulcanize','rename-index','cache-config',
+    'vulcanize','cache-config','size',
     cb);
 });
 
