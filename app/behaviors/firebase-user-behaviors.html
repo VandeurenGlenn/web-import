@@ -1,0 +1,103 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="firebase-behaviors.html">
+
+<script>
+  FirebaseUserBehaviorsImpl = {
+
+    properties: {
+      /**
+       * When logged in, this property reflects the firebase user auth object.
+       */
+      user: {
+        type: Object,
+        readOnly: true,
+        notify: true
+      },
+      userFbAuth: {
+        type: Object,
+        readOnly: true,
+      }
+    },
+
+    ready: function () {
+      this._loginRef = this.newFirebase();
+      this._loginRef.onAuth(function (user) {
+        this._setUser(user);
+        this._usersRef = this.newFirebase('users');
+        this.newFirebase('users').on('value', function (e) {
+          var users = e.val();
+          if (users) {
+            for (var user in users) {
+              if (users.hasOwnProperty(user) && users[user].uid === this.user.uid) {
+                this._setUser({name: users[user].userName});
+                console.log(this.user);
+              }
+              user = null;
+            }
+          } else {
+            this.userRef = this.newFirebase('users/' + this.user.uid);
+            this.userRef.set(this.user.google?this.user.google.cachedUserProfile:this.user);
+            // this.fire('new-user', this.user);
+          }
+          this._usersRef = null;
+        }.bind(this));
+      }.bind(this));
+    },
+
+    authUser: function (provider) {
+      switch(provider) {
+        case 'password':
+          this._loginRef.authWithPassword(params, this._loginHandler.bind(this), options);
+          break;
+        case 'anonymous':
+          this._loginRef.authAnonymously(this._loginHandler.bind(this), params);
+          break;
+        case 'custom':
+          this._loginRef.authWithCustomToken(params.token, this._loginHandler.bind(this));
+          break;
+        default:
+          throw 'Unknown provider: ' + this.provider;
+      }
+    },
+
+    newUserFirebase: function (name, param) {
+      this.newFirebase('users/' + this.user.uid).set({lastSession:{'firebase-app-location': name}}):
+      var params = param?param:'';
+      return new Firebase('https://' + name + '.firebaseio.com/' + params);
+    },
+
+    authUserFirebase: function (name, email, password) {
+      this.newUserFirebase(name).authWithPassword({'email': email, 'password': password, 'scope': 'email'}, this._UserFirebaseLoginHandler.bind(this));
+    },
+
+    _loginHandler: function(error, user) {
+      if (error) {
+        // an error occurred while attempting login
+        this.fire('error', error);
+      } else if (user) {
+        this._setUser(user);
+        this.fire('login', {user: user});
+      } else {
+        this._setUser(null);
+      }
+    },
+
+    /** Fires the 'user-fb-login' event when the user logs into to its own firebase for pushing/saving data */
+    _UserFirebaseLoginHandler: function(error, auth) {
+      if (error) {
+        // an error occurred while attempting login
+        this.fire('error', error);
+      } else if (auth) {
+        this._setUserFbAuth(auth);
+        this.fire('user-fb-login', {'auth': auth});
+      } else {
+        this._setUserFbAuth(null);
+      }
+    }
+  }
+
+  FirebaseUserBehaviors = [
+    FirebaseBehaviors,
+    FirebaseUserBehaviorsImpl
+  ]
+</script>
