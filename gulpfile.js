@@ -172,10 +172,14 @@ gulp.task('html', function () {
 });
 
 gulp.task('domains', function () {
-  return download('https://publicsuffix.org/list/effective_tld_names.dat')
-    .pipe($.rename('domains.dat'))
-    .pipe(gulp.dest('app/data/'))
-    .pipe($.size({title: 'domains'}));
+  fs.stat('app/data/domains.dat', function (err, stat) {
+    if (!stat) {
+      return download('https://publicsuffix.org/list/effective_tld_names.dat')
+        .pipe($.rename('domains.dat'))
+        .pipe(gulp.dest('app/data/'))
+        .pipe($.size({title: 'domains'}));
+    }
+  });
 });
 
 gulp.task('size', function () {

@@ -59,6 +59,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       connectUserFb: function () {
         document.querySelector('web-import-data').authUserFirebase(this._fbAppName, this._userFbEmail, this._userFbPassword);
+      },
+
+      updateLastSession: function () {
+        // save session data to firebase
       }
 
     });
