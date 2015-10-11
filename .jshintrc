@@ -20,6 +20,8 @@
     "Platform": true,
     "page": true,
     "app": true,
-    "FirebaseBehaviors": true
+    "FirebaseBehaviors": true,
+    "FirebaseUserBehaviors": true,
+    "FirebaseUserFirebaseBehaviors": true
   }
 }
