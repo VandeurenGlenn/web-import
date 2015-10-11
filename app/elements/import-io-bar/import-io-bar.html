@@ -90,6 +90,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.querySelector('.status-badge').classList.remove('red');
           this.urlToImport = url;
           this.fire('url-to-import', url);
+        } else if(url !== null && url.includes('www.')){
+          this.url = url.replace('www.', 'https://');
         } else if(url !== null){
           this.querySelector('.status-badge').classList.add('red');
           this.querySelector('.status-badge').classList.remove('green');
@@ -105,10 +107,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _validateUrl: function (url) {
         for (var i = 0; i < this.domains.length; i++) {
-          if (url.includes(this.domains[i]) && url.includes('https://') || url.includes('http://') || url.includes('www.')) {
-            return true;
+          if (url.endsWith('.' + this.domains[i])) {
+            if (url.includes('https://') || url.includes('http://') || url.includes('https://www.')) {
+              return true;
+            }
           }
         }
+        return false;
       },
 
       handleResponse: function (e) {
