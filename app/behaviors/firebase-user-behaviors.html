@@ -48,12 +48,13 @@
             if (users) {
               for (var user in users) {
                 if (users.hasOwnProperty(user) && user === this.user.uid) {
+                  // set accessible user data
                   this._setUser({name: users[user].name});
                   this._setLastUserSession({lastSession: users[user].lastSession});
                 } else {
                    this.userRef = this.newFirebase('users/' + this.user.uid);
                    this.userRef.set(this.user.google?this.user.google.cachedUserProfile:this.user);
-                   // this.fire('new-user', this.user);
+                   this.fire('new-user', this.user);
                 }
               }
             }

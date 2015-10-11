@@ -87,4 +87,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     document.querySelector('web-import-data').getUserData(app.user);
   };
 
+  app.openAccount = function () {
+    app.route = 'account';
+  };
+
 })(document);
