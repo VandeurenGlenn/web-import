@@ -21,6 +21,7 @@
     "page": true,
     "app": true,
     "FirebaseBehaviors": true,
+    "FirebaseAuthBehaviors": true,
     "FirebaseUserBehaviors": true,
     "FirebaseUserFirebaseBehaviors": true
   }
