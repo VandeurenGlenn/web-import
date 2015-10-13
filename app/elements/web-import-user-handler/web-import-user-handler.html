@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="../web-import-dialog/web-import-dialog.html">
+<link rel="import" href="../../behaviors/firebase-auth-behaviors.html">
 <link rel="import" href="../../behaviors/firebase-user-behaviors.html">
 <link rel="import" href="../../behaviors/firebase-user-firebase-behaviors.html">
 
@@ -38,11 +39,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-button raised on-tap="pushToFb" disabled="[[_computePushDisabled(_fbLocation)]]">Push</paper-button>
     </web-import-dialog>
 
+    <web-import-dialog id="addApp" title="Connect to App" with-backdrop>
+      <paper-dropdown-menu label="provider">
+        <paper-menu class="dropdown-content" selected="0">
+          <paper-item>Firebase</paper-item>
+          <paper-item disabled>Google</paper-item>
+        </paper-menu>
+      </paper-dropdown-menu>
+
+      <paper-input label="Name" value="{{_fbAppName}}"></paper-input>
+
+      <paper-button raised on-tap="saveFbApp">Save</paper-button>
+    </web-import-dialog>
+
   </template>
   <script>
     Polymer({
       is: 'web-import-user-handler',
-      behaviors: [FirebaseUserBehaviors, FirebaseUserFirebaseBehaviors],
+      behaviors: [FirebaseAuthBehaviors, FirebaseUserBehaviors, FirebaseUserFirebaseBehaviors],
 
       properties: {
         _fbLocation: {
@@ -56,7 +70,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
-        importResults: Object
+        importResults: Object,
+
+        disabled: {
+          type: Boolean
+        }
       },
 
       open: function (dialogId) {
