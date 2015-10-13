@@ -12,7 +12,9 @@
     "neon-animation": "PolymerElements/neon-animation#~1.0.6",
     "firebase-element": "GoogleWebcomponents/firebase-element#~1.0.6",
     "import-io": "VandeurenGlenn/import-io#~1.0.0",
-    "juicy-jsoneditor": "Juicy/juicy-jsoneditor#~1.0.2"
+    "juicy-jsoneditor": "Juicy/juicy-jsoneditor#~1.0.2",
+    "error-handler": "BasicElements/error-handler#~1.1.3",
+    "error-toast": "BasicElements/error-toast#~1.0.1"
   },
   "devDependencies": {
     "web-component-tester": "*",
