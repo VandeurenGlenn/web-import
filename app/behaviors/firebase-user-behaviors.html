@@ -10,6 +10,7 @@
        */
       user: {
         type: Object,
+        value: null,
         readOnly: true,
         notify: true
       },
@@ -30,84 +31,25 @@
       redirect: {
         type: Boolean,
         value: false
-      },
-
-      disabled: {
-        type: Boolean,
-        value: false
       }
     },
 
     ready: function () {
       this._loginRef = this.newFirebase();
-      this._loginRef.onAuth(function (user) {
-        this._setUser(user);
-        if (user !== null) {
-          this.newFirebase('users').on('value', function (e) {
-            var users = e.val();
-            if (users) {
-              for (var user in users) {
-                if (users.hasOwnProperty(user) && user === this.user.uid) {
-                  // set accessible user data
-                  this._setUser({name: users[user].name});
-                  this._setLastUserSession({lastSession: users[user].lastSession});
-                } else {
-                   this.userRef = this.newFirebase('users/' + this.user.uid);
-                   this.userRef.set(this.user.google?this.user.google.cachedUserProfile:this.user);
-                   this.fire('new-user', this.user);
-                }
-              }
-            }
-          }.bind(this));
-        }
-      }.bind(this));
+
     },
 
-    authUser: function (provider, params) {
-      switch(provider) {
-        case 'password':
-          this._loginRef.authWithPassword(params, this._loginHandler.bind(this), options);
-          break;
-        case 'anonymous':
-          this._loginRef.authAnonymously(this._loginHandler.bind(this), params);
-          break;
-        case 'custom':
-          this._loginRef.authWithCustomToken(params.token, this._loginHandler.bind(this));
-          break;
-        case 'google':
-        case 'github':
-          if (this.redirect) {
-            this._loginRef.authWithOAuthRedirect(provider, this._loginHandler.bind(this), params);
-          } else {
-            this._loginRef.authWithOAuthPopup(provider, this._loginHandler.bind(this), params);
-          }
-          break;
-        default:
-          throw 'Unknown provider: ' + provider;
-      }
+    _newUser: function () {
+      this.userRef = this.newFirebase('users/' + this.user.uid);
+      this.userRef.set(this.user.google?this.user.google.cachedUserProfile:this.user);
+      this.fire('new-user', this.user);
+      this.userRef = null;
     },
 
-    _loginHandler: function(error, user) {
-      if (error) {
-        // an error occurred while attempting login
-        this.fire('error', error);
-      } else if (user) {
-        this._setUser(user);
-        this.fire('login', {user: user});
-      } else {
-        this._setUser(null);
-      }
-    },
-
-    _computeLoginDialogOpened: function (user, disabled) {
-      if (!user && !disabled) {
-        return true;
-      }
-      return false;
-    },
-
-    googleLogin: function () {
-      this.authUser('google', this.params);
+    saveFbApp:function () {
+      new Firebase('https://webimport.firebaseio.com/users/' + this.user.__key__ + '/apps/firebase').push({name: this._fbAppName});
+      // var name = ;
+      // this.$.userApps.add();
     }
   }
 
