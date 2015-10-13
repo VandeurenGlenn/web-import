@@ -25,6 +25,7 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var download = require('gulp-download');
+var client = require('firebase-tools');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -308,6 +309,28 @@ gulp.task('default', ['clean'], function (cb) {
     ['jshint', 'images', 'fonts', 'html'],
     'vulcanize','cache-config','size',
     cb);
+});
+
+gulp.task('firebase-login', function () {
+  return client.login().catch(function (err) {
+    console.log(err);
+  });
+});
+
+gulp.task('firebase-deploy', function () {
+  return client.deploy({
+  firebase: 'webimport',
+  token: process.env.FIREBASE_TOKEN,
+  cwd: 'dist/'
+  }).then(function() {
+    console.log('App deployed!');
+  }).catch(function(err) {
+    console.log(err);
+  });
+});
+
+gulp.task('deploy', function(cb) {
+  runSequence('firebase-login', 'firebase-deploy', cb);
 });
 
 // Load tasks for web-component-tester

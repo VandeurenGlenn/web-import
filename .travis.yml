@@ -24,3 +24,6 @@ before_install:
 before_script:
   - npm install -g bower
   - bower install
+  - npm install firebase-tools
+deploy:
+  - gulp deploy

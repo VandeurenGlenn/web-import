@@ -40,7 +40,7 @@ Rob Dodson has a fantastic [PolyCast video](https://www.youtube.com/watch?v=xz-y
 With Node.js installed, run the following one liner from the root of your Polymer Starter Kit download:
 
 ```sh
-npm install -g gulp bower && npm install && bower install
+npm install -g gulp bower && npm install && bower install && npm install -g firebase-tools
 ```
 
 #### Prerequisites (for everyone)
@@ -51,6 +51,7 @@ The full starter kit requires the following major dependencies:
 - npm, the node package manager, installed with Node.js and used to install Node.js packages.
 - gulp, a Node.js-based build tool.
 - bower, a Node.js-based package manager used to install front-end packages (like Polymer).
+- firebase-tools, a Firebase cli.
 
 **To install dependencies:**
 
@@ -113,6 +114,14 @@ gulp
 ```
 
 Build and optimize the current project, ready for deployment. This includes linting as well as vulcanization, image, script, stylesheet and HTML optimization and minification.
+
+#### Deploy
+
+```sh
+gulp deploy
+```
+
+Deploys to Firebase (only for project maintainers). 
 
 ## Application Theming & Styling
 
