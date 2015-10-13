@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // Include Gulp & tools we'll use
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
+var gzip = require('gulp-gzip');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
@@ -198,6 +199,15 @@ gulp.task('vulcanize', function () {
     }))
     .pipe(gulp.dest(DEST_DIR))
     .pipe($.size({title: 'vulcanize'}));
+});
+
+gulp.task('compress', function() {
+  gulp.src(['app/**', 'dist/bower_components'])
+  .pipe($.size({title: 'before compression'}))
+  .pipe(gzip())
+  .pipe(gulp.dest('.tmp/'))
+  .pipe($.size({title: 'after compression'}))
+  .pipe(gulp.dest('build/compressed'));
 });
 
 // Generate config data for the <sw-precache-cache> element.
