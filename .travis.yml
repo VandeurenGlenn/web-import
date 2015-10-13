@@ -1,4 +1,4 @@
-language: node_js
+language: "node_js"
 node_js:
   - "0.12"
   - "iojs"
@@ -21,8 +21,8 @@ before_install:
   - "Xvfb :99.0 -extension RANDR > /dev/null &"
   - "sudo chmod 1777 /dev/shm"
 before_script:
-  - npm install -g bower
-  - bower install
-  - npm install firebase-tools
+  - "npm install -g bower"
+  - "bower install"
+  - "npm install firebase-tools"
 deploy:
-  - gulp deploy
+  - "gulp deploy"
