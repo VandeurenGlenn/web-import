@@ -1,0 +1,82 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="..\..\bower_components/firebase-element/firebase-collection.html">
+
+<dom-module id="account-section">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      @media (max-width: 900px) {
+        .heading {
+          @apply(--layout-vertical);
+          @apply(--layout-center);
+        }
+      }
+
+      @media (min-width: 901px) {
+        .heading {
+          @apply(--layout-horizontal);
+          @apply(--layout-center);
+        }
+        .heading img.avatar {
+          position: absolute;
+          top: 32px;
+          right: 32px;
+        }
+      }
+    </style>
+
+    <paper-material elevation="1" hidden="[[!user.name]]">
+      <div class="heading">
+        <img class="avatar" src="[[user.avatar]]" alt="No Avatar" />
+        <h2 class="page-title">[[_computeUserName(user)]]</h2>
+      </div>
+
+      <div class="horizontal">
+        <h4 class="paper-font-title">Connected Firebase Apps</h4>
+        <span class="flex"></span>
+        <paper-icon-button id="addFbApp" icon="add" on-tap="openAddAppDialog"></paper-icon-button>
+        <paper-tooltip for="addFbApp">Add</paper-tooltip>
+      </div>
+
+      <template is="dom-repeat" items="[[userApps]]" as="app">
+        <span>[[app.name]]</span>
+      </template>
+    </paper-material>
+
+    <firebase-collection id="userApps" location="[[_computeUserAppsLocation(user)]]" data="{{userApps}}"></firebase-collection>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'account-section',
+
+      properties: {
+        userName: {
+          computed: '_computeUserName(user)'
+        }
+      },
+
+      _computeUserAppsLocation :function (user) {
+        if (user) {
+          return 'https://webimport.firebaseio.com/users/' + user.__key__ + '/apps/firebase';
+        }
+      },
+
+      _computeUserName: function (user) {
+        if (user) {
+          return user.name;
+        }
+      },
+
+      openAddAppDialog: function () {
+        document.querySelector('web-import-user-handler').open('addApp');
+      }
+    });
+  </script>
+</dom-module>
