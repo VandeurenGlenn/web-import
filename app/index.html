@@ -70,6 +70,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
           <span class="paper-font-title">Menu</span>
+          <span class="flex"></span>
+          <img class="avatar" src="[[user.avatar]]" alt="No Avatar" hidden$="[[!user.avatar]]"/>
         </paper-toolbar>
 
         <!-- Drawer Content -->
@@ -79,9 +81,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <span>Home</span>
           </a>
 
-          <a data-route="users" href="/users" on-click="onDataRouteClick">
-            <iron-icon icon="info"></iron-icon>
-            <span>Users</span>
+          <a data-route="users" href="/account" on-click="onDataRouteClick">
+            <iron-icon icon="user-avatar-circle"></iron-icon>
+            <span>Account</span>
           </a>
 
           <a data-route="contact" href="/contact" on-click="onDataRouteClick">
@@ -124,15 +126,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="content">
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-            <home-section data-route="home" config-data="[[configData]]"></home-section>
+            <home-section data-route="home" config-data="[[configData]]" import-results="{{importResults}}"></home-section>
 
-            <section data-route="users">
-              <paper-material elevation="1">
-                <h2 class="page-title">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
-              </paper-material>
-            </section>
+            <account-section data-route="account" user="[[user]]"></account-section>
 
             <section data-route="user-info">
               <paper-material elevation="1">
@@ -157,8 +153,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </paper-scroll-header-panel>
     </paper-drawer-panel>
 
-    <web-import-dialogs></web-import-dialogs>
-    <web-import-login user="{{user}}" disabled="[[_computeLoginDisabled(route)]]" on-login="getUserData"></web-import-login>
+    <web-import-user-handler import-results="[[importResults]]" user="{{user}}" disabled="[[_computeLoginDisabled(route)]]" on-login="getUserData" on-new-user="openAccount"></web-import-user-handler>
     <web-import-data config-data="{{configData}}"></web-import-data>
 
     <!-- Error handler -->

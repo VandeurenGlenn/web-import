@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../elements/import-io-bar/import-io-bar.html">
 <link rel="import" href="../../bower_components/import-io/import-io.html">
@@ -28,6 +29,12 @@
       <juicy-jsoneditor json="[[importResults]]" history></juicy-jsoneditor>
     </paper-material>
 
+    <div class="options" hidden="[[_computeHidden(data)]]">
+      <paper-button on-tap="_basify" raised>Validate & Fix for Firebase</paper-button>
+      <paper-button on-tap="_pushToFirebase" raised>Push to Firebase</paper-button>
+    </div>
+
+    <paper-button hidden="[[_computeHidden(data)]]" on-tap="_objectify" raised>Convert to Object</paper-button>
     <paper-button hidden="[[_computeHidden(data)]]" on-tap="_downloadJSON" raised>Download JSON</paper-button>
 
     <import-io data="{{data}}" user-id="[[configData.importIo_userKey]]" api-key="[[configData.importIo_apiKey]]"></import-io>
@@ -42,6 +49,11 @@
           type: Object,
           value: null,
           observer: '_dataChanged'
+        },
+
+        importResults: {
+          type: Object,
+          notify: true
         }
       },
 
@@ -58,11 +70,49 @@
       },
 
       _dataChanged: function (data) {
+        if (data) {
+          this.importResults = this._getResults(data);
+        }
+      },
+
+      _getResults: function (data) {
         for (var props in data) {
           if (data.hasOwnProperty(props)) {
             for (var prop in data[props]) {
               if (data[props].hasOwnProperty(prop)) {
-                this.importResults = data[props][prop].results;
+                 return data[props][prop].results;
+              }
+            }
+          }
+        }
+      },
+
+      _objectify: function () {
+        if ( Array.isArray(this.importResults)) {
+          for (var i = 0; i < this.importResults.length; i++) {
+            if (!results) {
+              var results = {};
+            }
+            results[i] = this.importResults[i];
+          }
+          this.importResults = results;
+          results = null;
+        }
+        return this.importResults;
+      },
+
+      /** converts data to an Object when an Array, validates to firebase pushable data */
+      _basify: function () {
+        this.importResults = this._objectify();
+        for (var results in this.importResults) {
+          if (this.importResults.hasOwnProperty(results)) {
+            for (var result in this.importResults[results]) {
+              if (this.importResults[results].hasOwnProperty(result)) {
+                var temp = result.replace('/', '');
+                this.importResults[results][temp] = this.importResults[results][result];
+                if (result.includes('/')) {
+                  delete this.importResults[results][result];
+                }
               }
             }
           }
@@ -81,6 +131,10 @@
         Polymer.dom(this.root).appendChild(a)
         a.click();
         a = null;
+      },
+
+      _pushToFirebase: function () {
+        document.querySelector('web-import-user-handler').open('pushToFb');
       }
     });
   </script>

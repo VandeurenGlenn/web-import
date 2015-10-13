@@ -1,0 +1,74 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="firebase-behaviors.html">
+
+<script>
+  FirebaseUserFirebaseBehaviorsImpl = {
+
+    properties: {
+      /**
+       * When logged in, this property reflects the firebase user auth object.
+       */
+      user: {
+        type: Object,
+        readOnly: true,
+        notify: true
+      },
+
+      lastUserSession: {
+        readOnly: true,
+        notify: true
+      },
+
+      userFbAuthenticated: {
+        type: Boolean,
+        readOnly: true,
+        notify: true
+      },
+
+      userFbAuth: {
+        type: Object,
+        readOnly: true,
+        notify: true
+      }
+    },
+
+    ready: function () {
+      // body...
+    },
+
+    newUserFirebase: function (appName, param) {
+      // this.newFirebase('users/' + this.user.uid).set({lastSession:{'firebase-app-location': name}}):
+      var params = param?param:'';
+      return new Firebase('https://' + appName + '.firebaseio.com/' + params);
+    },
+
+    authUserFirebase: function (appName, email, password) {
+      this.newUserFirebase(appName).authWithPassword({'email': email, 'password': password, 'scope': 'email'}, this._UserFirebaseLoginHandler.bind(this));
+      this._updateLastSession(appName, email);
+    },
+
+    /** Fires the 'user-fb-login' event when the user logs into to its own firebase for pushing/saving data */
+    _UserFirebaseLoginHandler: function(error, auth) {
+      if (error) {
+        // an error occurred while attempting login
+        this.fire('error', error);
+      } else if (auth) {
+        this._setUserFbAuthenticated(true);
+        this._setUserFbAuth(auth);
+        this.fire('user-fb-login', {'auth': auth});
+      } else {
+        this._setUserFbAuthenticated(false);
+        this._setUserFbAuth(null);
+      }
+    },
+
+    _updateLastSession: function (user, appName, email) {
+      // body...
+    }
+  }
+
+  FirebaseUserFirebaseBehaviors = [
+    FirebaseBehaviors,
+    FirebaseUserFirebaseBehaviorsImpl
+  ]
+</script>
