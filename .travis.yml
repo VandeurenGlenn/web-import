@@ -33,12 +33,13 @@ before_install:
   - "Xvfb :99.0 -extension RANDR > /dev/null &"
   - "sudo chmod 1777 /dev/shm"
 install:
-  - "npm install -g bower"
-  - "bower install"
+  - nmp install
+  - npm install -g bower
+  - bower install
   - npm install firebase-tools
-after_succes:
   - npm install gulp
   - gulp
+after_succes:
   - mkdir /home/travis/tmp
   - npm install -g firebase-tools
   - if [[ "${TRAVIS_PULL_REQUEST}" == "false" ]]; then echo -e "${FIREBASE_EMAIL}\n${FIREBASE_PASSWORD}" | firebase deploy; fi
