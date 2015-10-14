@@ -1,7 +1,22 @@
+env:
+  deploy:
+    FIREBASE_EMAIL:
+      secure: "qdss3PVfdHGMqIWho8KjQi7cLgjV8DB/VDm0EmK6u0LWrQazQyRqCz6QlU+dvTGvK31IVZXd6Y002X0a5xC2QZ9nGCizKWDki1wFR2xoAdIM4un2R37d0uZEu28cyhrGKuaat5VNPfGIxal+kTYQhAD3AlXTzOURnQo2X+DWhMEU1VqgXEr+HrXyhSiIG
+      hPzPDfM8xrcrwI8Ff2YAQClkaf5Hi1gOJXC7gHBJ7UUaMcCTlXVetnKebsevl8lPqlKwcBnntdB9e1RngiRk4PKFnUUUIsbsoLHRfLAhT4UMFC24wFEbJmrLG0i9mRJcIOo5ivtDRkyQXWx3NGjNzU4AafKX3l6LIe9D7iF9skF3pY4naVsxhHAUJ5JKaH1UYC0OCX
+      taKf28qDBHAZFfSwGEfBi73tRC8KDrCAELGJe9hAU6dahUhcEyz0JgMCEfASKQmT+fUUrUY+7A+p5Vgf04t92Hy3+O07a3SKLAmI6z+ZUdWyM0cca2JL25i1e/VAp9DpcDusFcLYmcpyRLogMkf0MX/yCZkPRs+jd2nq9qeq4TtflIHtybNklJzdhiUl8E2rR8QEma
+      O0FP0kMVj3CMgK/RGiRHpSioLSzXMwfgwWlA/0upJZsf9wczBooZNden5jFWbeGgBbvRUZ+cJhFBC8riX6hrzsgfk1Ko="
+    FIREBASE_PASSWORD:
+      secure: "qdss3PVfdHGMqIWho8KjQi7cLgjV8DB/VDm0EmK6u0LWrQazQyRqCz6QlU+dvTGvK31IVZXd6Y002X0a5xC2QZ9nGCizKWDki1wFR2xoAdIM4un2R37d0uZEu28cyhrGKuaat5VNPfGIxal+kTYQhAD3AlXTzOURnQo2X+DWhMEU1VqgXEr+HrXyhSiIG
+      hPzPDfM8xrcrwI8Ff2YAQClkaf5Hi1gOJXC7gHBJ7UUaMcCTlXVetnKebsevl8lPqlKwcBnntdB9e1RngiRk4PKFnUUUIsbsoLHRfLAhT4UMFC24wFEbJmrLG0i9mRJcIOo5ivtDRkyQXWx3NGjNzU4AafKX3l6LIe9D7iF9skF3pY4naVsxhHAUJ5JKaH1UYC0OCX
+      taKf28qDBHAZFfSwGEfBi73tRC8KDrCAELGJe9hAU6dahUhcEyz0JgMCEfASKQmT+fUUrUY+7A+p5Vgf04t92Hy3+O07a3SKLAmI6z+ZUdWyM0cca2JL25i1e/VAp9DpcDusFcLYmcpyRLogMkf0MX/yCZkPRs+jd2nq9qeq4TtflIHtybNklJzdhiUl8E2rR8QEma
+      O0FP0kMVj3CMgK/RGiRHpSioLSzXMwfgwWlA/0upJZsf9wczBooZNden5jFWbeGgBbvRUZ+cJhFBC8riX6hrzsgfk1Ko="
 language: "node_js"
 node_js:
   - "0.12"
   - "iojs"
+before_script:
+  - "npm install -g bower"
+  - "bower install"
 before_install:
   # replace chromium with chrome
   - "sudo apt-get remove chromium-browser"
@@ -20,9 +35,10 @@ before_install:
   - "export DISPLAY=:99.0"
   - "Xvfb :99.0 -extension RANDR > /dev/null &"
   - "sudo chmod 1777 /dev/shm"
-before_script:
-  - "npm install -g bower"
-  - "bower install"
-  - "npm install firebase-tools"
+install:
+  - sudo install -g gulp
+  - gulp
 after_succes:
-  - "gulp deploy"
+  - mkdir /home/travis/tmp
+  - sudo install -g firebase-tools
+  - if [[ "${TRAVIS_PULL_REQUEST}" == "false" ]]; then echo -e "${FIREBASE_EMAIL}\n${FIREBASE_PASSWORD}" | firebase deploy; fi
