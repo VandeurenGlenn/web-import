@@ -37,7 +37,7 @@ install:
   - npm install -g bower
   - bower install
   - npm install firebase-tools
-  - npm install gulp
+  - npm install gulp -g
   - gulp
 after_succes:
   - mkdir /home/travis/tmp
