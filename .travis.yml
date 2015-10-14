@@ -17,6 +17,7 @@ node_js:
 before_script:
   - "npm install -g bower"
   - "bower install"
+  - npm install firebase-tools
 before_install:
   # replace chromium with chrome
   - "sudo apt-get remove chromium-browser"
