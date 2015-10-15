@@ -33,7 +33,7 @@ before_install:
   - "Xvfb :99.0 -extension RANDR > /dev/null &"
   - "sudo chmod 1777 /dev/shm"
 install:
-  - nmp install
+  - npm install
   - npm install -g bower
   - bower install
   - npm install firebase-tools
