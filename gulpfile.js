@@ -25,6 +25,8 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var download = require('gulp-download');
+var client = require('firebase-tools');
+var chalk  = require('chalk');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -310,9 +312,41 @@ gulp.task('default', ['clean'], function (cb) {
     cb);
 });
 
-// Load tasks for web-component-tester
-// Adds tasks for `gulp test:local` and `gulp test:remote`
-require('web-component-tester').gulp.init(gulp);
+gulp.task('firebase-login', function () {
+  return client.login().catch(function (err) {
+    console.log(err);
+  });
+});
+
+gulp.task('firebase-deploy', function () {
+  return client.deploy({
+  firebase: 'webimport',
+  token: process.env.FIREBASE_TOKEN,
+  cwd: 'dist/'
+  }).then(function() {
+    console.log('App deployed!');
+    process.exit();
+  }).catch(function(err) {
+    console.log(err);
+  });
+});
+
+gulp.task('test:local', function () {
+  var test = require('web-component-tester/runner/test');
+
+  test('local', function(error) {
+    if (error) {
+      console.log(chalk.red(error));
+      new Error(error);
+    } else {
+      process.exit();
+    }
+  });
+});
+
+gulp.task('deploy', function(cb) {
+  runSequence('firebase-login', 'firebase-deploy', cb);
+});
 
 // Load custom tasks from the `tasks` directory
 try { require('require-dir')('tasks'); } catch (err) {}
