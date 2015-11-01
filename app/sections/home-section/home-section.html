@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../elements/import-io-bar/import-io-bar.html">
 <link rel="import" href="../../bower_components/import-io/import-io.html">
@@ -21,12 +22,27 @@
       paper-material {
         padding: 0;
       }
+      iron-dropdown {
+        background: #FFF;
+      }
     </style>
 
     <import-io-bar url-to-import="{{urlToImport}}" on-url-to-import="getData"></import-io-bar>
 
     <paper-material elevation="1" hidden="[[_computeHidden(data)]]">
       <juicy-jsoneditor json="[[importResults]]" history></juicy-jsoneditor>
+      <iron-dropdown on-iron-resize="_updateContextMenuPosition">
+        <div class="dropdown-content">
+          <h2 class="paper-font-title">Change Name to:</h2>
+          <paper-dropdown-menu label="change value to link text">
+            <paper-menu class="dropdown-content">
+            <template is="dom-repeat" items="[[changeToValueMenuItems]]">
+              <paper-item>[[item.name]]</paper-item>
+            </template>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
+      </iron-dropdown>
     </paper-material>
 
     <div class="options" hidden="[[_computeHidden(data)]]">
@@ -34,6 +50,7 @@
       <paper-button on-tap="_pushToFirebase" raised>Push to Firebase</paper-button>
     </div>
 
+    <paper-button raised on-tap="changeTo"></paper-button>
     <paper-button hidden="[[_computeHidden(data)]]" on-tap="_objectify" raised>Convert to Object</paper-button>
     <paper-button hidden="[[_computeHidden(data)]]" on-tap="_downloadJSON" raised>Download JSON</paper-button>
 
@@ -54,6 +71,16 @@
         importResults: {
           type: Object,
           notify: true
+        },
+
+        mobile: {
+          type: Boolean,
+          value: false
+        },
+
+        changeToValueMenuItems: {
+          type: Array,
+          value: []
         }
       },
 
@@ -61,17 +88,71 @@
         this.querySelector('import-io').urlToData(this.urlToImport);
       },
 
+      changeTo: function (event) {
+        for (var i = 0; i < this.importResults.length; i++) {
+          for (var result in this.importResults[i]) {
+            if (result === 'link/_text') {
+              var temp = result.replace('link/_text', 'name');
+              this.importResults[i][temp] = this.importResults[i][result]
+              delete this.importResults[i][result];
+            }
+          }
+        }
+      },
+
+      /** Define a new value for the selected value*/
+      changeAll: function (selected, newVal) {
+        for (var i = 0; i < this.importResults.length; i++) {
+          for (var result in this.importResults[i]) {
+            if (result === 'link/_text') {
+              var temp = result.replace('link/_text', 'name');
+              this.importResults[i][temp] = this.importResults[i][result]
+              delete this.importResults[i][result];
+            }
+          }
+        }
+      },
+
       _computeHidden: function (data) {
         if (data) {
           this.querySelector('juicy-jsoneditor').addEventListener('change', this._jsonChanged.bind(this));
+          this.querySelector('juicy-jsoneditor').oncontextmenu = function() {
+            if (event.target.className.includes('field')) {
+              var x = event.clientX;
+              var y = event.clientY;
+              this._openContextMenu(x, y);  // open context menu
+            }
+            return false;
+          }.bind(this);
           return false;
         }
         return true;
       },
 
+      _openContextMenu: function (x, y) {
+        // open dialog on right click
+        // var contextMenu = document.createElement('catalog-creator-context-menu');
+        this._updateContextMenuPosition(x, y);
+        this.querySelector('iron-dropdown').open();
+      },
+
+      _updateContextMenuPosition: function (x, y) {
+        if (this.mobile) {
+          // let the menu appear at the bottom, using ccs & media query
+          return
+        }
+        if (typeof x === 'number' && typeof y === 'number') {
+          // TODO: remember last position
+          // this.lastContextMenuPosition = {}
+          this.querySelector('iron-dropdown').style = 'left: ' + x + 'px; top: ' + y + 'px;'; // update position
+        }
+      },
+
       _dataChanged: function (data) {
         if (data) {
-          this.importResults = this._getResults(data);
+          var data = this._getResults(data);
+          this.importResults = data;
+          this._updateChangeToValueMenuItems(data);
         }
       },
 
@@ -84,6 +165,21 @@
               }
             }
           }
+        }
+      },
+
+      _updateChangeToValueMenuItems: function (data) {
+        for (var i = 0; i < data.length; i++) {
+          for (var val in data[i]) {
+            if (data[i].hasOwnProperty(val)) {
+              for (var v = 0; v < this.changeToValueMenuItems.length; v++) {
+                if (this.changeToValueMenuItems[v].name !== val) {
+                  return this.push('changeToValueMenuItems', {name: val})
+                }
+              }
+              this.push('changeToValueMenuItems', {name: val})
+            }
+          };
         }
       },
 
@@ -108,7 +204,9 @@
           if (this.importResults.hasOwnProperty(results)) {
             for (var result in this.importResults[results]) {
               if (this.importResults[results].hasOwnProperty(result)) {
-                var temp = result.replace('/', '');
+                if (result.includes('/')) {
+                  var temp = result.replace('/', '')
+                }
                 this.importResults[results][temp] = this.importResults[results][result];
                 if (result.includes('/')) {
                   delete this.importResults[results][result];
@@ -117,6 +215,15 @@
             }
           }
         }
+      },
+
+      _updateMenu: function (result) {
+
+        // if (!this.changeToValueMenuItems) {
+        //   this.changeToValueMenuItems = [{name: 'undefined'}];
+        // }
+
+
       },
 
       _jsonChanged: function (json) {
