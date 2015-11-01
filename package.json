@@ -23,6 +23,7 @@
     "gulp-gzip": "^1.2.0",
     "gulp-vulcanize": "^6.0.0",
     "gulp-download": "0.0.1",
+    "firebase-tools": "^2.0.2",
     "jshint-stylish": "^2.0.0",
     "merge-stream": "^0.1.7",
     "require-dir": "^0.3.0",
