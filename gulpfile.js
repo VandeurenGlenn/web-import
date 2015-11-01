@@ -324,6 +324,7 @@ gulp.task('firebase-deploy', function () {
   cwd: 'dist/'
   }).then(function() {
     console.log('App deployed!');
+    process.exit();
   }).catch(function(err) {
     console.log(err);
   });
