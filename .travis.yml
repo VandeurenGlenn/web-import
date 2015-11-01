@@ -38,6 +38,7 @@ install:
   - bower install
   - npm install firebase-tools
   - npm install gulp -g
+  - gulp
 after_succes:
   - mkdir /home/travis/tmp
-  - if [[ "${TRAVIS_PULL_REQUEST}" == "false" ]]; then echo -e "${FIREBASE_EMAIL}\n${FIREBASE_PASSWORD}" | firebase deploy; fi
+  - if [[ "${TRAVIS_PULL_REQUEST}" === "false" ]]; then echo -e "${FIREBASE_EMAIL}\n${FIREBASE_PASSWORD}" | firebase deploy; fi
